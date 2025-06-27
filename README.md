@@ -43,33 +43,6 @@ This application is specifically designed to provide QA learners with a realisti
    - Status update functionality
    - Data persistence testing
 
-## 🐛 Intentional Flaws for Testing Practice
-
-### 1. Home Page - Missing Date Validation
-- **Issue**: The "Preferred Pickup Date" field is not validated as required
-- **Testing Opportunity**: Form validation testing, boundary testing
-- **Expected Behavior**: Should require a date selection
-
-### 2. Dashboard - Location Filter Bug
-- **Issue**: Filtering by "Eldoret" shows Nairobi requests instead
-- **Testing Opportunity**: Filter functionality testing, data consistency
-- **Expected Behavior**: Should show only Eldoret requests
-
-### 3. Feedback Page - Multiple Validation Issues
-- **Issue**: Request ID accepts invalid formats and comments can be empty
-- **Testing Opportunity**: Input validation, boundary testing, special character handling
-- **Expected Behavior**: Should validate Request ID format and require comments
-
-### 4. Awareness Page - Accessibility Issues
-- **Issue**: All images are missing alt-text attributes
-- **Testing Opportunity**: Accessibility testing, screen reader compatibility
-- **Expected Behavior**: All images should have descriptive alt-text
-
-### 5. Admin Panel - UI Update Bug
-- **Issue**: "Mark as Scheduled" button doesn't update the UI visually
-- **Testing Opportunity**: UI state management, data persistence verification
-- **Expected Behavior**: UI should update immediately after status change
-
 ## 🛠️ Tech Stack
 
 - **Frontend**: React 18.2.0
@@ -184,32 +157,19 @@ The application comes with pre-filled mock data:
 
 The application is designed to be mobile-friendly with:
 - Responsive navigation
-- Mobile-optimized tables
+- Mobile-optimised tables
 - Flexible grid layouts
 - Touch-friendly buttons
-
-## 🔧 Customization
-
-### Adding New Flaws
-To add more testing scenarios, you can:
-1. Modify the data service (`src/services/dataService.js`)
-2. Update form validation logic
-3. Add UI inconsistencies
-4. Introduce new filtering bugs
-
-### Styling Changes
-- Main styles: `src/index.css`
-- Component-specific styles: `src/App.css`
-- Responsive breakpoints: 768px for mobile
 
 ## 📚 Learning Resources
 
 ### Testing Concepts Covered
-- **Functional Testing**: Form validation, CRUD operations
+- **Functional & Non Functional Testing**: Form validation, CRUD operations
 - **UI Testing**: Responsive design, accessibility
 - **Integration Testing**: Data flow between components
 - **Regression Testing**: Status updates and data persistence
 - **Boundary Testing**: Input validation and edge cases
+- **Risk Based Testing**: Security validation or prevention 
 
 ### Tools You Can Use
 - **Browser DevTools**: For debugging and responsive testing
@@ -218,17 +178,9 @@ To add more testing scenarios, you can:
 - **Selenium/Cypress**: For automated testing
 - **Lighthouse**: For performance and accessibility audits
 
-## 🤝 Contributing
-
-This is an educational project designed for QA training. Feel free to:
-- Add more intentional bugs for testing practice
-- Improve the UI/UX design
-- Add new features for testing scenarios
-- Create additional test cases
-
 ## 📄 License
 
-This project is created for educational purposes. Feel free to use and modify for QA training and learning.
+This project is created for educational purposes and remains the property of the academy at PLP.
 
 ## 🆘 Support
 
