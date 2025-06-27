@@ -21,17 +21,10 @@
 
 ### **🔄 Weekly Progress Meetings**
 - **Day:** Every Wednesday
-- **Duration:** 30 minutes per group
-- **Format:** Online meeting (Zoom/Teams)
+- **Duration:** 10 minutes per group
+- **Format:** Online meeting
 - **Attendees:** Group Leaders + Module instructor
 - **Purpose:** Progress review, issue resolution, guidance
-
-### **📋 Meeting Schedule**
-**Group A:** 9:00 AM - 9:30 AM  
-**Group B:** 9:30 AM - 10:00 AM  
-**Group C:** 10:00 AM - 10:30 AM  
-**Group D:** 10:30 AM - 11:00 AM  
-**Group E:** 11:00 AM - 11:30 AM  
 
 *Note: Specific group assignments and meeting links will be provided separately*
 
@@ -218,7 +211,7 @@
 - Risk Assessment
 - Recommendations and Improvements
 - Test Metrics and KPIs
-- **Jira Reports:** Include screenshots of Jira dashboards and reports
+- **Jira/Github Kanban Reports:** Include screenshots of Jira dashboards and reports
 
 ### **2. 5-Minute Video Presentation**
 **Content:**
@@ -227,14 +220,14 @@
 - Demo of major issues discovered
 - Recommendations for improvement
 - Team collaboration insights
-- **Jira Demonstration:** Show Jira usage and project management
+- **Jira/Github Demonstration:** Show Jira usage and project management
 
 ### **3. Supporting Documentation**
 - Detailed test cases and results
 - Bug reports with screenshots/videos
 - Test data and scenarios used
 - Tool configurations and setup guides
-- **Jira Export:** Complete project export with all issues and comments
+- **Jira/Github Export:** Complete project export with all issues and comments
 
 ---
 
@@ -473,7 +466,7 @@ See [Meeting Schedule](./meeting-schedule.md) for weekly agenda, preparation, an
 ## 🧪 Test Data & Environment
 See [Test Data](./test-data.md) and [Technical Specs](./technical-specs.md) for sample data, environment setup, and browser/device requirements.
 
-## 🛠️ Jira & Project Management
+## 🛠️ Jira/Github Kanban & Project Management
 See [Jira Setup Guide](./jira-setup.md) for step-by-step Jira configuration, best practices, and troubleshooting.
 
 **Note:** Students may use either Jira or GitHub Kanban (Projects) for project management. GitHub Kanban is free and integrated with your repository, making it a convenient choice for student teams.
