@@ -1,4 +1,6 @@
-# Jira Setup Guide for CleanCity QA Testing
+# Project Management Tool Setup Guide for CleanCity QA Testing
+
+**Note:** Students may use either Jira **or** GitHub Kanban (Projects) for all project management, bug tracking, and reporting requirements. GitHub Kanban is free and integrated with GitHub, making it a convenient alternative to Jira. All instructions below are for Jira, but equivalent steps can be followed in GitHub Kanban.
 
 ## 📋 **Document Information**
 

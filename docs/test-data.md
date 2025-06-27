@@ -64,7 +64,7 @@ Phone: +1-555-9999
 {
   "id": 1,
   "userId": "user1@test.com",
-  "pickupDate": "2024-07-15",
+  "pickupDate": "2025-07-15",
   "wasteType": "General",
   "quantity": "Medium",
   "status": "Pending",
@@ -78,7 +78,7 @@ Phone: +1-555-9999
 {
   "id": 2,
   "userId": "user2@test.com",
-  "pickupDate": "2024-07-12",
+  "pickupDate": "2025-07-12",
   "wasteType": "Recyclable",
   "quantity": "Large",
   "status": "Confirmed",
@@ -92,7 +92,7 @@ Phone: +1-555-9999
 {
   "id": 3,
   "userId": "user3@test.com",
-  "pickupDate": "2024-07-10",
+  "pickupDate": "2025-07-10",
   "wasteType": "Organic",
   "quantity": "Small",
   "status": "Completed",
@@ -112,7 +112,7 @@ Phone: +1-555-9999
   "title": "5 Ways to Reduce Household Waste",
   "content": "Simple tips to cut down on daily waste and help the environment...",
   "author": "EcoTeam",
-  "date": "2024-06-01",
+  "date": "2025-06-01",
   "tags": ["Tips", "Household"],
   "featured": true
 }
@@ -125,7 +125,7 @@ Phone: +1-555-9999
   "title": "Understanding Recycling Symbols",
   "content": "A quick guide to decoding recycling labels on packaging...",
   "author": "Admin",
-  "date": "2024-05-20",
+  "date": "2025-05-20",
   "tags": ["Recycling", "Education"],
   "featured": false
 }
@@ -141,7 +141,7 @@ Phone: +1-555-9999
   "id": 1,
   "content": "Just scheduled my weekly pickup! CleanCity makes it so easy to keep our neighborhood clean.",
   "author": "Sarah J.",
-  "date": "2024-06-01",
+  "date": "2025-06-01",
   "likes": 12,
   "comments": 3
 }
@@ -153,7 +153,7 @@ Phone: +1-555-9999
   "id": 3,
   "content": "Our street looks amazing after the cleanup event! Thanks everyone for participating.",
   "author": "Admin",
-  "date": "2024-05-28",
+  "date": "2025-05-28",
   "likes": 15,
   "comments": 5
 }
@@ -358,5 +358,14 @@ javascript:alert('XSS')
 - **Cosmetic Bugs:** Visual issues
 
 ---
+
+## 📋 For full project details, see:
+- [README](./README.md) for project overview and requirements
+- [Submission Guidelines](./submission.md) for all submission instructions
+- [Video Presentation Guidelines](./video-guide.md) for video requirements
+- [FAQ](./faq.md) for common questions
+- [Meeting Schedule](./meeting-schedule.md) for meetings and protocols
+- [Technical Specs](./technical-specs.md) for environment and compatibility
+- [Jira Setup Guide](./jira-setup.md) for project management tool setup (Jira or GitHub Kanban are both acceptable)
 
 This test data should be used to create comprehensive test scenarios and validate all aspects of the CleanCity application functionality. 

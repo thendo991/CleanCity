@@ -116,7 +116,7 @@ src/
   firstName: "John",
   lastName: "Doe",
   role: "user", // "user" or "admin"
-  joinDate: "2024-01-01",
+  joinDate: "2025-01-01",
   profile: {
     avatar: "url_to_avatar",
     bio: "User bio",
@@ -138,10 +138,10 @@ src/
   address: "123 Main St",
   wasteType: "general",
   quantity: "medium",
-  scheduledDate: "2024-01-15",
+  scheduledDate: "2025-01-15",
   status: "pending", // "pending", "confirmed", "completed", "cancelled"
-  createdAt: "2024-01-10T10:00:00Z",
-  updatedAt: "2024-01-10T10:00:00Z",
+  createdAt: "2025-01-10T10:00:00Z",
+  updatedAt: "2025-01-10T10:00:00Z",
   notes: "Additional notes"
 }
 ```
@@ -153,7 +153,7 @@ src/
   title: "Post Title",
   content: "Post content in HTML format",
   author: "user_id",
-  publishDate: "2024-01-10T10:00:00Z",
+  publishDate: "2025-01-10T10:00:00Z",
   status: "published", // "draft", "published", "archived"
   tags: ["environment", "tips"],
   likes: 0,
@@ -372,5 +372,14 @@ npm run build
 - **TypeScript:** Type safety (optional upgrade)
 
 ---
+
+## 📋 For full project details, see:
+- [README](./README.md) for project overview and requirements
+- [Submission Guidelines](./submission.md) for all submission instructions
+- [Video Presentation Guidelines](./video-guide.md) for video requirements
+- [FAQ](./faq.md) for common questions
+- [Meeting Schedule](./meeting-schedule.md) for meetings and protocols
+- [Test Data](./test-data.md) for sample data and scenarios
+- [Jira Setup Guide](./jira-setup.md) for project management tool setup (Jira or GitHub Kanban are both acceptable)
 
 **This technical specification provides the foundation for comprehensive QA testing of the CleanCity application.** 🏗️✨ 

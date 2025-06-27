@@ -287,7 +287,7 @@
 1. Upload to designated platform
 2. Include team information
 3. Provide contact details
-4. Submit by July 11th, 2024
+4. Submit by July 16th, 2025
 
 ---
 
@@ -314,3 +314,12 @@
 ---
 
 **Your video is your opportunity to showcase your unique testing approach and insights. Be creative, be professional, and make it memorable!** 🎬✨ 
+
+## 📋 For full project details, see:
+- [README](./README.md) for project overview and requirements
+- [Submission Guidelines](./submission.md) for all submission instructions
+- [FAQ](./faq.md) for common questions
+- [Meeting Schedule](./meeting-schedule.md) for meetings and protocols
+- [Test Data](./test-data.md) for sample data and scenarios
+- [Technical Specs](./technical-specs.md) for environment and compatibility
+- [Jira Setup Guide](./jira-setup.md) for project management tool setup (Jira or GitHub Kanban are both acceptable) 

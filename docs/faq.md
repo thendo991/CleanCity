@@ -12,13 +12,13 @@
 ## 🤔 **General Questions**
 
 ### **Q: What is the main purpose of this project?**
-**A:** This is a comprehensive QA testing assessment where you'll test a real web application (CleanCity) to identify bugs, validate functionality, and demonstrate your testing skills. You'll work in teams of 3, use professional tools like Jira, and deliver a complete test report and presentation.
+**A:** This is a comprehensive QA testing assessment where you'll test a real web application (CleanCity) to identify bugs, validate functionality, and demonstrate your testing skills. You'll work in teams of 3, use professional tools like Jira or GitHub Kanban (free alternative), and deliver a complete test report and presentation.
 
 ### **Q: How long do we have to complete the project?**
-**A:** The project runs from June 26th to July 11th, 2024. You'll have weekly submissions every Wednesday, with the final submission due on July 11th.
+**A:** The project runs from June 26th to July 16th, 2025. You'll have weekly submissions every Wednesday, with the final submission due on July 16th.
 
 ### **Q: What if I can't attend the weekly meetings?**
-**A:** Weekly meetings are mandatory for group leaders. If you can't attend, arrange for another team member to represent your group. Contact the project manager in advance if there are unavoidable conflicts.
+**A:** Weekly meetings are mandatory for group leaders. If you can't attend, arrange for another team member to represent your group. Contact the Module instructor in advance if there are unavoidable conflicts.
 
 ### **Q: Can we work individually or do we have to work in teams?**
 **A:** This is a team project. You must work in groups of 3 people. Team collaboration and coordination are part of the assessment criteria.
@@ -31,29 +31,32 @@
 **A:** You need to test on Chrome, Firefox, Safari, and Edge. The latest versions of these browsers are required. See the [Test Environment Setup Guide](./test-environment.md) for detailed requirements.
 
 ### **Q: Do we need to install any special software?**
-**A:** You'll need to set up Jira (free account), install browser developer tools, and optionally install testing tools like screen recording software. See the [Test Environment Setup Guide](./test-environment.md) for a complete list.
+**A:** You'll need to set up a project management tool (Jira or GitHub Kanban, both free), install browser developer tools, and optionally install testing tools like screen recording software. See the [Test Environment Setup Guide](./test-environment.md) for a complete list.
 
 ### **Q: What if the application doesn't work on my computer?**
-**A:** First, check the [Test Environment Setup Guide](./test-environment.md) for system requirements. If you're still having issues, contact the project manager with specific error details.
+**A:** First, check the [Test Environment Setup Guide](./test-environment.md) for system requirements. If you're still having issues, contact the Module instructor with specific error details.
 
 ### **Q: Can we use automation tools?**
 **A:** Yes! Automation testing is encouraged and can earn you bonus points (up to 10%). You can use Jest or PyTest for automated smoke tests. Document your automation strategy and results.
 
 ---
 
-## 📊 **Jira Questions**
+## 📊 **Project Management Tool Questions**
 
-### **Q: How do we set up Jira?**
-**A:** Follow the detailed [Jira Setup Guide](./jira-setup.md). You'll create a free Jira Cloud account and set up a project called "CleanCity QA Testing" with the project key "CLEANCITY".
+### **Q: How do we set up a project management tool?**
+**A:** Follow the detailed [Jira Setup Guide](./jira-setup.md) for Jira, or use GitHub Kanban (Projects) for a free, integrated alternative. You'll create a project board for "CleanCity QA Testing" and set up columns for workflow.
 
-### **Q: What types of issues should we create in Jira?**
-**A:** Create Epics for major testing phases, Stories for feature testing requirements, Tasks for individual testing activities, and Bugs for defects you find. Use the custom fields for Environment, Severity, Steps to Reproduce, and Expected vs Actual.
+### **Q: What types of issues should we create?**
+**A:** Create Epics for major testing phases, Stories for feature testing requirements, Tasks for individual testing activities, and Bugs for defects you find. Use the custom fields for Environment, Severity, Steps to Reproduce, and Expected vs Actual (or equivalent in your chosen tool).
 
 ### **Q: How detailed should our bug reports be?**
 **A:** Very detailed! Include clear titles, step-by-step reproduction steps, screenshots/videos, environment details, severity assessment, and impact analysis. Quality bug reports are a major part of your assessment.
 
 ### **Q: Can we update bug reports after creating them?**
 **A:** Yes, you should update bug reports as you gather more information. Add comments, attach additional screenshots, and update the status as issues are resolved or investigated further.
+
+### **Q: Should we include our project management board in the final submission?**
+**A:** Yes! Export your complete project management board (all issues, comments, attachments) and include it as part of your final submission. This demonstrates your project management skills.
 
 ---
 
@@ -76,7 +79,7 @@
 ## 🎯 **Testing Questions**
 
 ### **Q: How many bugs should we find?**
-**A:** You must find and document at least **15 bugs** in Jira by the end of the project. These should include:
+**A:** You must find and document at least **15 bugs** in your project management tool (Jira or GitHub Kanban) by the end of the project. These should include:
 - **At least 3 critical/major bugs** (high impact issues)
 - **At least 5 medium bugs** (moderate impact issues)  
 - **At least 7 minor/cosmetic bugs** (low impact issues)
@@ -85,7 +88,7 @@
 Focus on quality over quantity - well-documented bugs with clear reproduction steps are more valuable than many poorly documented ones.
 
 ### **Q: What if we can't reproduce a bug we found?**
-**A:** Document this in Jira! Intermittent bugs are common in real testing. Note the conditions when you found it, what you tried to reproduce it, and mark it as "Intermittent" or "Cannot Reproduce". However, intermittent bugs count toward your minimum total.
+**A:** Document this in your project management tool! Intermittent bugs are common in real testing. Note the conditions when you found it, what you tried to reproduce it, and mark it as "Intermittent" or "Cannot Reproduce". However, intermittent bugs count toward your minimum total.
 
 ### **Q: Should we test on mobile devices?**
 **A:** Yes! Mobile testing is required. You can use physical devices, browser responsive mode, or online simulators. Test both portrait and landscape orientations.
@@ -122,24 +125,24 @@ The application contains intentional flaws for testing practice, so thorough tes
 ### **Q: Do we need to include screenshots in our report?**
 **A:** Yes! Screenshots and videos are essential for documenting bugs and demonstrating issues. Include them in both Jira bug reports and your final test report.
 
-### **Q: Should we include our Jira project in the final submission?**
-**A:** Yes! Export your complete Jira project (all issues, comments, attachments) and include it as part of your final submission. This demonstrates your project management skills.
+### **Q: Should we include our project management board in the final submission?**
+**A:** Yes! Export your complete project management board (all issues, comments, attachments) and include it as part of your final submission. This demonstrates your project management skills.
 
 ---
 
 ## 👥 **Team Questions**
 
 ### **Q: How should we divide the work among team members?**
-**A:** That's up to your team! Consider each member's strengths and interests. You might divide by features, testing types, or phases. Document your team structure and responsibilities in Jira.
+**A:** That's up to your team! Consider each member's strengths and interests. You might divide by features, testing types, or phases. Document your team structure and responsibilities in your project management tool.
 
 ### **Q: What if there's a conflict within our team?**
-**A:** Try to resolve conflicts within your team first. If issues persist, contact the project manager. Remember that effective teamwork is part of your assessment.
+**A:** Try to resolve conflicts within your team first. If issues persist, contact the Module instructor. Remember that effective teamwork is part of your assessment.
 
 ### **Q: Can we get help from other teams?**
 **A:** You can discuss general testing approaches and share learning resources, but each team should do their own testing and create their own deliverables. Plagiarism is not allowed.
 
 ### **Q: How do we handle team member absences?**
-**A:** Plan for this possibility by documenting work in Jira and sharing knowledge regularly. If a team member is consistently unavailable, contact the project manager.
+**A:** Plan for this possibility by documenting work in your project management tool and sharing knowledge regularly. If a team member is consistently unavailable, contact the Module instructor.
 
 ---
 
@@ -166,17 +169,17 @@ The application contains intentional flaws for testing practice, so thorough tes
 1. Check this FAQ first
 2. Review the relevant documentation
 3. Ask during weekly meetings
-4. Contact the project manager
+4. Contact the Module instructor
 5. Use Jira help center for technical issues
 
 ### **Q: What if we find a critical bug that breaks the application?**
-**A:** Document it immediately in Jira with high severity. Include screenshots and detailed steps. These are exactly the types of issues you should be finding!
+**A:** Document it immediately in your project management tool with high severity. Include screenshots and detailed steps. These are exactly the types of issues you should be finding!
 
 ### **Q: Can we suggest improvements to the testing process?**
 **A:** Absolutely! Your feedback is valuable. Share suggestions during weekly meetings or in your reflection documents. This shows critical thinking and engagement.
 
 ### **Q: What if we have technical difficulties with our tools?**
-**A:** Document the issue and try alternative approaches. If you can't resolve it, contact the project manager with specific details about what you've tried and what error messages you're seeing.
+**A:** Document the issue and try alternative approaches. If you can't resolve it, contact the Module instructor with specific details about what you've tried and what error messages you're seeing.
 
 ---
 
@@ -197,5 +200,14 @@ The application contains intentional flaws for testing practice, so thorough tes
 **A:** Treat this project like a real job. Use professional tools, follow best practices, document everything, and collaborate effectively. This experience will be valuable for your career.
 
 ---
+
+## 📋 For full project details, see:
+- [README](./README.md) for project overview and requirements
+- [Submission Guidelines](./submission.md) for all submission instructions
+- [Video Presentation Guidelines](./video-guide.md) for video requirements
+- [Meeting Schedule](./meeting-schedule.md) for meetings and protocols
+- [Test Data](./test-data.md) for sample data and scenarios
+- [Technical Specs](./technical-specs.md) for environment and compatibility
+- [Jira Setup Guide](./jira-setup.md) for project management
 
 **Remember: When in doubt, ask! It's better to clarify something early than to make assumptions that could affect your work.** 🤔✨ 

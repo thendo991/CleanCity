@@ -7,17 +7,65 @@
 **Project:** CleanCity - Waste Pickup Scheduler  
 **Prepared For:** QA Testing Teams  
 
+## 📋 For full project details, see:
+- [README](./README.md) for project overview and requirements
+- [Video Presentation Guidelines](./video-guide.md) for video requirements
+- [FAQ](./faq.md) for common questions
+- [Meeting Schedule](./meeting-schedule.md) for meetings and protocols
+- [Test Data](./test-data.md) for sample data and scenarios
+- [Technical Specs](./technical-specs.md) for environment and compatibility
+- [Jira Setup Guide](./jira-setup.md) for project management
+
 ---
 
 ## 📤 **Submission Overview**
 
-### **Deadline:** July 11th, 2024 (11:59 PM)
+### **Deadline:** July 16th, 2025 (11:59 PM)
 
 ### **Required Deliverables:**
 1. **5-Minute Video Presentation** (MP4 format)
 2. **Comprehensive Test Report** (PDF format)
 
 ### **Submission Method:** Google Drive Links
+
+## 📆 **Weekly Submission Requirements**
+
+All student groups must submit their entire project repository in phases, with a complete submission each week. Each submission is a full snapshot of the project at that stage and must be committed and pushed to the repository. Only work present in the repo at each phase will be reviewed and graded.
+
+### **Week 1: Initial Setup & Planning**
+- **Due:** Wednesday, July 2, 2025
+- Repository initialized with project structure
+- `tests` folder created in the root of the repository
+- Initial test plan and strategy documented (`tests/test-plan.md`)
+- Team member roles and responsibilities documented
+- Any initial setup scripts or environment notes
+
+### **Week 2: Test Design & Early Execution**
+- **Due:** Wednesday, July 9, 2025
+- Updated test plan and strategy
+- Draft test cases and checklists (`tests/test-cases.md`)
+- Early manual or automated test scripts (Jest, PyTest, Selenium, etc.)
+- Initial defect/issue log (`tests/defect-log.md`)
+- Documentation of any challenges or changes
+
+### **Week 3: Test Execution & Reporting**
+- **Due:** Wednesday, July 16, 2025
+- Expanded/updated test cases and scripts
+- Results of executed tests (manual and automated)
+- Updated defect/issue log with findings
+- Screenshots, logs, or evidence of test execution
+- Refined documentation and lessons learned
+
+### **Final Submission: Complete Project**
+- **Due:** Wednesday, July 16, 2025 (same as Week 3)
+- All test files, scripts, and documentation in the `tests` folder
+- Final test report and summary (`tests/final-report.md`)
+- Complete defect/issue log
+- All code, documentation, and deliverables committed to the repo
+- Any additional materials required by the instructor
+
+**Note:**
+- Each weekly submission must be a full snapshot of the project at that stage.
 
 ---
 
@@ -52,7 +100,7 @@
 
 ### **Step 5: File Naming**
 - **Format:** `TeamName_CleanCity_QA_Video_Date.mp4`
-- **Example:** `TeamAlpha_CleanCity_QA_Video_July11.mp4`
+- **Example:** `TeamAlpha_CleanCity_QA_Video_July16.mp4`
 
 ---
 
@@ -100,7 +148,7 @@
 
 ### **Step 6: File Naming**
 - **Format:** `TeamName_CleanCity_QA_Report_Date.pdf`
-- **Example:** `TeamAlpha_CleanCity_QA_Report_July11.pdf`
+- **Example:** `TeamAlpha_CleanCity_QA_Report_July16.pdf`
 
 ---
 
@@ -218,7 +266,7 @@ For questions about submission process:
 ## ⚠️ **Important Reminders**
 
 ### **Deadline Enforcement**
-- **No late submissions** accepted after July 11th, 2024, 11:59 PM
+- **No late submissions** accepted after July 16th, 2025, 11:59 PM
 - **Submit early** to avoid technical issues
 - **Test your links** before final submission
 - **Keep backup copies** of your files

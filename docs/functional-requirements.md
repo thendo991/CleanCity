@@ -150,15 +150,10 @@ The application provides a complete waste management solution including user reg
 ## 📝 **6. Content Management Requirements**
 
 ### **6.1 Blog System**
-**FR-031:** The system shall display educational blog posts about waste management.
-
-**FR-032:** The system shall allow users to read blog articles with rich text formatting.
-
-**FR-033:** The system shall allow users to comment on blog posts.
-
-**FR-034:** The system shall allow admins to create, edit, and delete blog posts.
-
-**FR-035:** The system shall support blog post categories and tags.
+- The system should have a blog feature related to waste management.
+- Users should be able to interact with blog content in some way.
+- There should be some way for users and/or admins to manage blog posts.
+- The blog may support categories, tags, or other organizational features.
 
 ### **6.2 Awareness Section**
 **FR-036:** The system shall display rotating eco tips every 5 seconds.
@@ -371,3 +366,5 @@ The application provides a complete waste management solution including user reg
 ---
 
 This FRS document provides the foundation for creating comprehensive test cases and ensuring the CleanCity application meets all functional requirements. Testers should use this document to understand the expected behavior and create test scenarios that validate each requirement. 
+
+Students may use either Jira or GitHub Kanban (which is free and integrated with GitHub) for these requirements. 

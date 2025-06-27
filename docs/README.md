@@ -3,7 +3,7 @@
 ## 🎯 **Project Overview**
 
 **Project Name:** CleanCity - Waste Pickup Scheduler Web Application  
-**Testing Period:** Until July 11th, 2024  
+**Testing Period:** Until July 16th, 2025  
 **Team Size:** 3 QA Specialists per group  
 **Deliverable:** Comprehensive Test Report + 5-minute Video Presentation  
 
@@ -23,7 +23,7 @@
 - **Day:** Every Wednesday
 - **Duration:** 30 minutes per group
 - **Format:** Online meeting (Zoom/Teams)
-- **Attendees:** Group Leaders + Project Manager
+- **Attendees:** Group Leaders + Module instructor
 - **Purpose:** Progress review, issue resolution, guidance
 
 ### **📋 Meeting Schedule**
@@ -36,46 +36,36 @@
 *Note: Specific group assignments and meeting links will be provided separately*
 
 ### **📊 Meeting Agenda**
-- **Week 1 (June 26):** Project kickoff, team formation, Jira setup
+- **Week 1 (June 26):** Project kickoff, team formation, project management tool setup (Jira or GitHub Kanban)
 - **Week 2 (July 3):** Test planning review, progress check
 - **Week 3 (July 10):** Final review, submission preparation
 
 ---
 
-## 🎫 **Jira Project Management**
+## 🎫 **Project Management Tools (Jira or GitHub Kanban)**
 
-### **📋 Jira Requirements**
-- **Platform:** Jira Cloud (free tier available)
+### **📋 Project Management Requirements**
+- **Platform:** Jira Cloud (free tier) or GitHub Kanban (free and integrated with GitHub)
 - **Project Type:** Software Testing Project
-- **Issue Types:** Bug, Task, Story, Epic
+- **Issue Types:** Bug, Task, Story, Epic (or equivalent in chosen tool)
 - **Workflow:** To Do → In Progress → In Review → Done
 
-### **🎯 Jira Setup Instructions**
-1. **Create Jira Account:**
-   - Go to atlassian.com
-   - Sign up for free Jira Cloud account
-   - Create new project: "CleanCity QA Testing"
+### **🎯 Project Management Setup Instructions**
+1. **Choose a Tool:**
+   - Use Jira (see [Jira Setup Guide](./jira-setup.md)) or GitHub Kanban (see GitHub Projects documentation)
+2. **Create Project Board:**
+   - Set up columns for workflow
+   - Add team members
+   - Configure issue types/cards
 
-2. **Project Configuration:**
-   - **Project Key:** CLEANCITY
-   - **Project Name:** CleanCity QA Testing
-   - **Project Type:** Software Testing
-   - **Template:** Scrum
-
-3. **Issue Types Setup:**
-   - **Epic:** Major testing phases
-   - **Story:** Feature testing requirements
-   - **Task:** Individual testing activities
-   - **Bug:** Defects found during testing
-
-### **📝 Jira Usage Requirements**
+### **📝 Project Management Usage Requirements**
 - **Daily Updates:** Log all testing activities
-- **Bug Reporting:** Create detailed bug reports in Jira
+- **Bug Reporting:** Create detailed bug reports in your chosen tool
 - **Progress Tracking:** Update task status regularly
 - **Documentation:** Attach screenshots and test results
 - **Team Collaboration:** Assign tasks to team members
 
-### **🔍 Jira Fields for Bug Reports**
+### **🔍 Bug Report Fields**
 - **Summary:** Clear, concise bug title
 - **Description:** Detailed steps to reproduce
 - **Environment:** Browser, OS, device details
@@ -271,7 +261,7 @@
 - **Responsive Design:** Browser responsive mode
 
 ### **Project Management**
-- **Jira:** Issue tracking and project management
+- **Jira or GitHub Kanban (Projects):** Issue tracking and project management (GitHub Kanban is free and recommended for student use)
 - **Google Drive:** File sharing and collaboration
 - **Communication:** Teams/Zoom for meetings
 
@@ -337,64 +327,48 @@ Your work will be evaluated based on:
 
 ---
 
-## 📅 **Weekly Submission Requirements**
+## 📦 Phased Weekly Project Submission Requirements
 
-### **Every Wednesday - Progress Submissions**
+All student groups must submit their entire project repository in phases, with a complete submission each week. This ensures continuous progress, feedback, and transparency.
 
-#### **Week 1 (June 26): Initial Setup & Planning**
-**Due:** Wednesday, June 26, 2024 - 11:59 PM
-**Submit to:** [Submission portal link]
-**Required:**
-- [ ] Jira project setup confirmation (screenshot)
-- [ ] Team member assignments and roles
-- [ ] Initial test plan outline
-- [ ] Testing environment setup confirmation
-- [ ] Week 1 progress report in Jira
+### **Weekly Submission Structure**
 
-#### **Week 2 (July 3): Testing Execution**
-**Due:** Wednesday, July 3, 2024 - 11:59 PM
-**Submit to:** [Submission portal link]
-**Required:**
-- [ ] Completed test cases (minimum 50% of planned tests)
-- [ ] Bug reports in Jira (minimum 8 defects documented)
-- [ ] Testing progress dashboard screenshot
-- [ ] Week 2 progress report in Jira
-- [ ] Any automation work started (if applicable)
+#### **Week 1: Initial Setup & Planning**
+- Due: Wednesday, July 2, 2025
+- Repository initialized with project structure
+- `tests` folder created
+- Initial test plan and strategy documented (`tests/test-plan.md`)
+- Team member roles and responsibilities documented
+- Any initial setup scripts or environment notes
 
-#### **Week 3 (July 10): Final Preparation**
-**Due:** Wednesday, July 10, 2024 - 11:59 PM
-**Submit to:** [Submission portal link]
-**Required:**
-- [ ] All testing activities completed
-- [ ] Bug reports in Jira (minimum 15 total defects documented)
-- [ ] Final test report draft
-- [ ] Video presentation script/outline
-- [ ] Jira project export
-- [ ] Week 3 progress report in Jira
-- [ ] Automation testing results (if applicable)
+#### **Week 2: Test Design & Early Execution**
+- Due: Wednesday, July 9, 2025
+- Updated test plan and strategy
+- Draft test cases and checklists (`tests/test-cases.md`)
+- Early manual or automated test scripts (Jest, PyTest, Selenium, etc.)
+- Initial defect/issue log (`tests/defect-log.md`)
+- Documentation of any challenges or changes
 
-#### **Final Submission (July 11): Complete Deliverables**
-**Due:** Thursday, July 11, 2024 - 11:59 PM
-**Submit to:** [Submission portal link]
-**Required:**
-- [ ] Final PDF test report
-- [ ] 5-minute video presentation
-- [ ] Complete Jira project export
-- [ ] All supporting documentation
-- [ ] Team reflection document
+#### **Week 3: Test Execution & Reporting**
+- Due: Wednesday, July 16, 2025
+- Expanded/updated test cases and scripts
+- Results of executed tests (manual and automated)
+- Updated defect/issue log with findings
+- Screenshots, logs, or evidence of test execution
+- Refined documentation and lessons learned
 
-### **📋 Weekly Submission Format**
-Each weekly submission should include:
-1. **Progress Summary** (1 page max)
-2. **Jira Dashboard Screenshots**
-3. **Completed Deliverables Checklist**
-4. **Challenges Encountered & Solutions**
-5. **Next Week's Plan**
+#### **Final Submission: Complete Project**
+- Due: Wednesday, July 16, 2025 (same as Week 3)
+- All test files, scripts, and documentation in the `tests` folder
+- Final test report and summary (`tests/final-report.md`)
+- Complete defect/issue log
+- All code, documentation, and deliverables committed to the repo
+- Any additional materials required by the instructor
 
-### **⚠️ Late Submission Policy**
-- **Week 1-2:** 10% deduction per day late
-- **Week 3:** 20% deduction per day late
-- **Final Submission:** No late submissions accepted
+**Note:**
+- Each weekly submission must be a full snapshot of the project at that stage, committed and pushed to the repository.
+- Only work present in the repo at each phase will be reviewed and graded.
+- Feedback will be provided after each phase to guide improvements for the next submission.
 
 ---
 
@@ -483,3 +457,71 @@ If you have questions about the documentation or need clarification:
 **Last Updated:** [Current Date]  
 **Document Version:** 1.0  
 **Project:** CleanCity - Waste Pickup Scheduler 
+
+## 📤 Submission & Deliverables
+See [Submission Guidelines](./submission.md) for full details on how to submit, file naming, and required deliverables.
+
+## 🎬 Video Presentation
+See [Video Presentation Guidelines](./video-guide.md) for detailed structure, timing, and creative ideas.
+
+## ❓ Frequently Asked Questions
+See [FAQ](./faq.md) for answers to common questions about the project, process, and requirements.
+
+## 🗓️ Meeting Schedule & Protocols
+See [Meeting Schedule](./meeting-schedule.md) for weekly agenda, preparation, and templates.
+
+## 🧪 Test Data & Environment
+See [Test Data](./test-data.md) and [Technical Specs](./technical-specs.md) for sample data, environment setup, and browser/device requirements.
+
+## 🛠️ Jira & Project Management
+See [Jira Setup Guide](./jira-setup.md) for step-by-step Jira configuration, best practices, and troubleshooting.
+
+**Note:** Students may use either Jira or GitHub Kanban (Projects) for project management. GitHub Kanban is free and integrated with your repository, making it a convenient choice for student teams.
+
+---
+
+## 📈 Course Enhancements for Modern QA Education
+
+To further align this course with industry standards and real-world QA expectations, the following enhancements are recommended:
+
+### Assessment & Deliverables
+- **Project Work:** Capstone QA project including test plan, test cases, defect logging, automation scripts, and a final presentation/demo.
+- **Weekly Assignments:** Short tasks (e.g., bug reports, test cases, tool usage).
+- **Quizzes:** Reinforce ISTQB concepts and terminology.
+- **Participation:** Group discussions, peer reviews, and tool demos.
+
+### Modern QA Practices: CI/CD Integration (Optional)
+- **Objectives:** Understand automated testing in CI/CD pipelines; exposure to tools like GitHub Actions, Jenkins.
+- **Content:** Overview of CI/CD, automated tests in pipelines, tool demos.
+- **Activity:** Demo of a simple CI pipeline running automated tests on code push.
+
+### Accessibility Testing
+- **Objectives:** Understand accessibility's role in software quality; learn basic accessibility testing techniques.
+- **Content:** WCAG standards, tools (axe DevTools, WAVE, screen readers), common issues.
+- **Activity:** Hands-on evaluation of a sample web page with accessibility tools.
+
+### Soft Skills for Testers
+- **Objectives:** Recognize the importance of communication, teamwork, and reporting in QA.
+- **Content:** Effective bug reporting, communicating with stakeholders, teamwork in agile, feedback.
+- **Activity:** Role-play defect reporting, collaborative test planning, group exercises.
+
+---
+
+*These enhancements ensure students gain practical, modern, and well-rounded QA skills, preparing them for ISTQB certification and real-world software testing roles.*
+
+---
+
+## 📂 Test Files, Automation, and Documentation Submission
+
+All student groups must:
+- Create a folder named `tests` in the root of their repository.
+- Place all test files, scripts, and supporting source code for automated tests (e.g., Jest, PyTest, Selenium, or any other tools used) in this folder.
+- Include Markdown (`.md`) files documenting:
+  - Test design and approach
+  - How to run the tests
+  - Any setup or environment requirements
+  - Defect reports and issue logs
+- All defect reports, issues, and bug documentation must be included in the `tests` folder (or subfolders) for evaluation.
+- Only work that is present in the repository will be considered for grading and feedback.
+
+*This ensures your testing work is transparent, reproducible, and easy to evaluate by instructors.* 
