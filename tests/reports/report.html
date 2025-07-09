@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Test Report</title>
+    <style>body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  /* do not increase min-width as some may use split screens */
+  min-width: 800px;
+  color: #999;
+}
+
+h1 {
+  font-size: 24px;
+  color: black;
+}
+
+h2 {
+  font-size: 16px;
+  color: black;
+}
+
+p {
+  color: black;
+}
+
+a {
+  color: #999;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+/******************************
+ * SUMMARY INFORMATION
+ ******************************/
+#environment td {
+  padding: 5px;
+  border: 1px solid #E6E6E6;
+}
+#environment tr:nth-child(odd) {
+  background-color: #f6f6f6;
+}
+
+/******************************
+ * TEST RESULT COLORS
+ ******************************/
+span.passed,
+.passed .col-result {
+  color: green;
+}
+
+span.skipped,
+span.xfailed,
+span.rerun,
+.skipped .col-result,
+.xfailed .col-result,
+.rerun .col-result {
+  color: orange;
+}
+
+span.error,
+span.failed,
+span.xpassed,
+.error .col-result,
+.failed .col-result,
+.xpassed .col-result {
+  color: red;
+}
+
+/******************************
+ * RESULTS TABLE
+ *
+ * 1. Table Layout
+ * 2. Extra
+ * 3. Sorting items
+ *
+ ******************************/
+/*------------------
+ * 1. Table Layout
+ *------------------*/
+#results-table {
+  border: 1px solid #e6e6e6;
+  color: #999;
+  font-size: 12px;
+  width: 100%;
+}
+#results-table th,
+#results-table td {
+  padding: 5px;
+  border: 1px solid #E6E6E6;
+  text-align: left;
+}
+#results-table th {
+  font-weight: bold;
+}
+
+/*------------------
+ * 2. Extra
+ *------------------*/
+.log {
+  background-color: #e6e6e6;
+  border: 1px solid #e6e6e6;
+  color: black;
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  height: 230px;
+  overflow-y: scroll;
+  padding: 5px;
+  white-space: pre-wrap;
+}
+.log:only-child {
+  height: inherit;
+}
+
+div.image {
+  border: 1px solid #e6e6e6;
+  float: right;
+  height: 240px;
+  margin-left: 5px;
+  overflow: hidden;
+  width: 320px;
+}
+div.image img {
+  width: 320px;
+}
+
+div.video {
+  border: 1px solid #e6e6e6;
+  float: right;
+  height: 240px;
+  margin-left: 5px;
+  overflow: hidden;
+  width: 320px;
+}
+div.video video {
+  overflow: hidden;
+  width: 320px;
+  height: 240px;
+}
+
+.collapsed {
+  display: none;
+}
+
+.expander::after {
+  content: " (show details)";
+  color: #BBB;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.collapser::after {
+  content: " (hide details)";
+  color: #BBB;
+  font-style: italic;
+  cursor: pointer;
+}
+
+/*------------------
+ * 3. Sorting items
+ *------------------*/
+.sortable {
+  cursor: pointer;
+}
+
+.sort-icon {
+  font-size: 0px;
+  float: left;
+  margin-right: 5px;
+  margin-top: 5px;
+  /*triangle*/
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+}
+.inactive .sort-icon {
+  /*finish triangle*/
+  border-top: 8px solid #E6E6E6;
+}
+.asc.active .sort-icon {
+  /*finish triangle*/
+  border-bottom: 8px solid #999;
+}
+.desc.active .sort-icon {
+  /*finish triangle*/
+  border-top: 8px solid #999;
+}
+</style></head>
+  <body onLoad="init()">
+    <script>/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+function toArray(iter) {
+    if (iter === null) {
+        return null;
+    }
+    return Array.prototype.slice.call(iter);
+}
+
+function find(selector, elem) { // eslint-disable-line no-redeclare
+    if (!elem) {
+        elem = document;
+    }
+    return elem.querySelector(selector);
+}
+
+function findAll(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return toArray(elem.querySelectorAll(selector));
+}
+
+function sortColumn(elem) {
+    toggleSortStates(elem);
+    const colIndex = toArray(elem.parentNode.childNodes).indexOf(elem);
+    let key;
+    if (elem.classList.contains('result')) {
+        key = keyResult;
+    } else if (elem.classList.contains('links')) {
+        key = keyLink;
+    } else {
+        key = keyAlpha;
+    }
+    sortTable(elem, key(colIndex));
+}
+
+function showAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(showExtras);
+}
+
+function hideAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(hideExtras);
+}
+
+function showExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.remove('collapsed');
+    expandcollapse.classList.remove('expander');
+    expandcollapse.classList.add('collapser');
+}
+
+function hideExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.add('collapsed');
+    expandcollapse.classList.remove('collapser');
+    expandcollapse.classList.add('expander');
+}
+
+function showFilters() {
+    const filterItems = document.getElementsByClassName('filter');
+    for (let i = 0; i < filterItems.length; i++)
+        filterItems[i].hidden = false;
+}
+
+function addCollapse() {
+    // Add links for show/hide all
+    const resulttable = find('table#results-table');
+    const showhideall = document.createElement('p');
+    showhideall.innerHTML = '<a href="javascript:showAllExtras()">Show all details</a> / ' +
+                            '<a href="javascript:hideAllExtras()">Hide all details</a>';
+    resulttable.parentElement.insertBefore(showhideall, resulttable);
+
+    // Add show/hide link to each result
+    findAll('.col-result').forEach(function(elem) {
+        const collapsed = getQueryParameter('collapsed') || 'Passed';
+        const extras = elem.parentNode.nextElementSibling;
+        const expandcollapse = document.createElement('span');
+        if (extras.classList.contains('collapsed')) {
+            expandcollapse.classList.add('expander');
+        } else if (collapsed.includes(elem.innerHTML)) {
+            extras.classList.add('collapsed');
+            expandcollapse.classList.add('expander');
+        } else {
+            expandcollapse.classList.add('collapser');
+        }
+        elem.appendChild(expandcollapse);
+
+        elem.addEventListener('click', function(event) {
+            if (event.currentTarget.parentNode.nextElementSibling.classList.contains('collapsed')) {
+                showExtras(event.currentTarget);
+            } else {
+                hideExtras(event.currentTarget);
+            }
+        });
+    });
+}
+
+function getQueryParameter(name) {
+    const match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function init () { // eslint-disable-line no-unused-vars
+    resetSortHeaders();
+
+    addCollapse();
+
+    showFilters();
+
+    sortColumn(find('.initial-sort'));
+
+    findAll('.sortable').forEach(function(elem) {
+        elem.addEventListener('click',
+            function() {
+                sortColumn(elem);
+            }, false);
+    });
+}
+
+function sortTable(clicked, keyFunc) {
+    const rows = findAll('.results-table-row');
+    const reversed = !clicked.classList.contains('asc');
+    const sortedRows = sort(rows, keyFunc, reversed);
+    /* Whole table is removed here because browsers acts much slower
+     * when appending existing elements.
+     */
+    const thead = document.getElementById('results-table-head');
+    document.getElementById('results-table').remove();
+    const parent = document.createElement('table');
+    parent.id = 'results-table';
+    parent.appendChild(thead);
+    sortedRows.forEach(function(elem) {
+        parent.appendChild(elem);
+    });
+    document.getElementsByTagName('BODY')[0].appendChild(parent);
+}
+
+function sort(items, keyFunc, reversed) {
+    const sortArray = items.map(function(item, i) {
+        return [keyFunc(item), i];
+    });
+
+    sortArray.sort(function(a, b) {
+        const keyA = a[0];
+        const keyB = b[0];
+
+        if (keyA == keyB) return 0;
+
+        if (reversed) {
+            return keyA < keyB ? 1 : -1;
+        } else {
+            return keyA > keyB ? 1 : -1;
+        }
+    });
+
+    return sortArray.map(function(item) {
+        const index = item[1];
+        return items[index];
+    });
+}
+
+function keyAlpha(colIndex) {
+    return function(elem) {
+        return elem.childNodes[1].childNodes[colIndex].firstChild.data.toLowerCase();
+    };
+}
+
+function keyLink(colIndex) {
+    return function(elem) {
+        const dataCell = elem.childNodes[1].childNodes[colIndex].firstChild;
+        return dataCell == null ? '' : dataCell.innerText.toLowerCase();
+    };
+}
+
+function keyResult(colIndex) {
+    return function(elem) {
+        const strings = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed',
+            'Skipped', 'Passed'];
+        return strings.indexOf(elem.childNodes[1].childNodes[colIndex].firstChild.data);
+    };
+}
+
+function resetSortHeaders() {
+    findAll('.sort-icon').forEach(function(elem) {
+        elem.parentNode.removeChild(elem);
+    });
+    findAll('.sortable').forEach(function(elem) {
+        const icon = document.createElement('div');
+        icon.className = 'sort-icon';
+        icon.textContent = 'vvv';
+        elem.insertBefore(icon, elem.firstChild);
+        elem.classList.remove('desc', 'active');
+        elem.classList.add('asc', 'inactive');
+    });
+}
+
+function toggleSortStates(elem) {
+    //if active, toggle between asc and desc
+    if (elem.classList.contains('active')) {
+        elem.classList.toggle('asc');
+        elem.classList.toggle('desc');
+    }
+
+    //if inactive, reset all other functions and add ascending active
+    if (elem.classList.contains('inactive')) {
+        resetSortHeaders();
+        elem.classList.remove('inactive');
+        elem.classList.add('active');
+    }
+}
+
+function isAllRowsHidden(value) {
+    return value.hidden == false;
+}
+
+function filterTable(elem) { // eslint-disable-line no-unused-vars
+    const outcomeAtt = 'data-test-result';
+    const outcome = elem.getAttribute(outcomeAtt);
+    const classOutcome = outcome + ' results-table-row';
+    const outcomeRows = document.getElementsByClassName(classOutcome);
+
+    for(let i = 0; i < outcomeRows.length; i++){
+        outcomeRows[i].hidden = !elem.checked;
+    }
+
+    const rows = findAll('.results-table-row').filter(isAllRowsHidden);
+    const allRowsHidden = rows.length == 0 ? true : false;
+    const notFoundMessage = document.getElementById('not-found-message');
+    notFoundMessage.hidden = !allRowsHidden;
+}
+</script>
+    <h1>report.html</h1>
+    <p>Report generated on 09-Jul-2025 at 12:58:17 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.1.1</p>
+    <h2>Summary</h2>
+    <p>28 tests ran in 2026.09 seconds. </p>
+    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="passed">5 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="failed">23 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
+    <h2>Results</h2>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable result initial-sort" col="result">Result</th>
+          <th class="sortable" col="name">Test</th>
+          <th class="sortable" col="duration">Duration</th>
+          <th class="sortable links" col="links">Links</th></tr>
+        <tr hidden="true" id="not-found-message">
+          <th colspan="4">No results found. Try to check the filters</th></tr></thead>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_admin.py::TestAdmin::test_admin_login</td>
+          <td class="col-duration">90.92</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_admin.TestAdmin object at 0x111626350&gt;<br/>admin_user = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session=&quot;0b9b34dbe20fc2cf8dd3365761ce3c41&quot;)&gt;<br/>admin_page = &lt;pages.admin_page.AdminPage object at 0x11162eba0&gt;<br/><br/>    def test_admin_login(self, admin_user, admin_page):<br/>&gt;       admin_page.navigate_to_admin()<br/><br/>tests/tests/test_admin.py:12: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/admin_page.py:14: in navigate_to_admin<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;admin&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;0b9b34dbe20fc2cf8dd3365761ce3c41&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x1116f76a0&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x000000010d55a2c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x000000010d5518ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x000000010cfd6de0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x000000010d028797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x000000010d0289b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x000000010d0789b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x000000010d04e9ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x000000010d075cdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x000000010d04e793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x000000010d01ab25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x000000010d01b791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x000000010d516cc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x000000010d51abb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x000000010d4f1004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x000000010d51b5db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x000000010d4df704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x000000010d53f0c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x000000010d53f290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x000000010d5514b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;admin&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_admin.py::TestAdmin::test_update_request_status</td>
+          <td class="col-duration">86.80</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_admin.TestAdmin object at 0x111626710&gt;<br/>admin_user = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session=&quot;0ed4ce76cc2b153f1c6e840c90874dfb&quot;)&gt;<br/>admin_page = &lt;pages.admin_page.AdminPage object at 0x111739f90&gt;<br/><br/>    def test_update_request_status(self, admin_user, admin_page):<br/>&gt;       admin_page.navigate_to_admin()<br/><br/>tests/tests/test_admin.py:16: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/admin_page.py:14: in navigate_to_admin<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;admin&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;0ed4ce76cc2b153f1c6e840c90874dfb&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x111764a40&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x00000001065f92c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x00000001065f08ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x0000000106075de0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x00000001060c7797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x00000001060c79b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x00000001061179b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x00000001060ed9ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x0000000106114cdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x00000001060ed793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x00000001060b9b25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x00000001060ba791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x00000001065b5cc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x00000001065b9bb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x0000000106590004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x00000001065ba5db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x000000010657e704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x00000001065de0c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x00000001065de290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x00000001065f04b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;admin&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_admin.py::TestAdmin::test_stats_update</td>
+          <td class="col-duration">86.91</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_admin.TestAdmin object at 0x11156aea0&gt;<br/>admin_user = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session=&quot;b799e2a451c06ce1cbaf0527dbbc33b6&quot;)&gt;<br/>admin_page = &lt;pages.admin_page.AdminPage object at 0x11173b4d0&gt;<br/><br/>    def test_stats_update(self, admin_user, admin_page):<br/>&gt;       admin_page.navigate_to_admin()<br/><br/>tests/tests/test_admin.py:27: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/admin_page.py:14: in navigate_to_admin<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;admin&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;b799e2a451c06ce1cbaf0527dbbc33b6&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x111764c20&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x000000010b5702c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x000000010b5678ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x000000010afecde0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x000000010b03e797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x000000010b03e9b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x000000010b08e9b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x000000010b0649ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x000000010b08bcdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x000000010b064793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x000000010b030b25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x000000010b031791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x000000010b52ccc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x000000010b530bb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x000000010b507004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x000000010b5315db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x000000010b4f5704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x000000010b5550c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x000000010b555290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x000000010b5674b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;admin&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_admin.py::TestAdmin::test_update_button_state</td>
+          <td class="col-duration">86.52</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_admin.TestAdmin object at 0x11156b100&gt;<br/>admin_user = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session=&quot;d15c65fbe2809ba34c2ce2678de242a8&quot;)&gt;<br/>admin_page = &lt;pages.admin_page.AdminPage object at 0x11172e190&gt;<br/><br/>    def test_update_button_state(self, admin_user, admin_page):<br/>&gt;       admin_page.navigate_to_admin()<br/><br/>tests/tests/test_admin.py:43: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/admin_page.py:14: in navigate_to_admin<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;admin&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;d15c65fbe2809ba34c2ce2678de242a8&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x111764ea0&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x000000010a9932c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x000000010a98a8ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x000000010a40fde0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x000000010a461797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x000000010a4619b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x000000010a4b19b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x000000010a4879ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x000000010a4aecdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x000000010a487793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x000000010a453b25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x000000010a454791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x000000010a94fcc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x000000010a953bb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x000000010a92a004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x000000010a9545db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x000000010a918704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x000000010a9780c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x000000010a978290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x000000010a98a4b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;admin&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_awareness.py::TestAwarenessPage::test_accessibility_images</td>
+          <td class="col-duration">86.47</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_awareness.TestAwarenessPage object at 0x1116265d0&gt;<br/>logged_in_user = True<br/>awareness_page = &lt;pages.awareness_page.AwarenessPage object at 0x11162e660&gt;<br/><br/>    def test_accessibility_images(self, logged_in_user, awareness_page):<br/>        &quot;&quot;&quot;Test that images have proper alt text for accessibility&quot;&quot;&quot;<br/>&gt;       awareness_page.navigate_to_awareness()<br/><br/>tests/tests/test_awareness.py:8: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/awareness_page.py:11: in navigate_to_awareness<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;awareness&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;a1b8072ac3d087b06ca4eef34f553787&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x111764fe0&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x000000010fabd2c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x000000010fab48ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x000000010f539de0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x000000010f58b797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x000000010f58b9b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x000000010f5db9b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x000000010f5b19ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x000000010f5d8cdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x000000010f5b1793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x000000010f57db25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x000000010f57e791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x000000010fa79cc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x000000010fa7dbb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x000000010fa54004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x000000010fa7e5db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x000000010fa42704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x000000010faa20c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x000000010faa2290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x000000010fab44b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;awareness&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_awareness.py::TestAwarenessPage::test_awareness_content_sections</td>
+          <td class="col-duration">86.66</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_awareness.TestAwarenessPage object at 0x1116260d0&gt;<br/>logged_in_user = True<br/>awareness_page = &lt;pages.awareness_page.AwarenessPage object at 0x11173b250&gt;<br/><br/>    def test_awareness_content_sections(self, logged_in_user, awareness_page):<br/>        &quot;&quot;&quot;Test that all awareness sections are present&quot;&quot;&quot;<br/>&gt;       awareness_page.navigate_to_awareness()<br/><br/>tests/tests/test_awareness.py:29: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/awareness_page.py:11: in navigate_to_awareness<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;awareness&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;aa5443e94ef3b8d69a1aaa4ec4899c75&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x111765760&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x000000010f9012c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x000000010f8f88ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x000000010f37dde0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x000000010f3cf797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x000000010f3cf9b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x000000010f41f9b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x000000010f3f59ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x000000010f41ccdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x000000010f3f5793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x000000010f3c1b25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x000000010f3c2791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x000000010f8bdcc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x000000010f8c1bb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x000000010f898004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x000000010f8c25db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x000000010f886704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x000000010f8e60c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x000000010f8e6290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x000000010f8f84b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;awareness&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_awareness.py::TestAwarenessPage::test_responsive_layout</td>
+          <td class="col-duration">86.68</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_awareness.TestAwarenessPage object at 0x11156b230&gt;<br/>logged_in_user = True<br/>awareness_page = &lt;pages.awareness_page.AwarenessPage object at 0x11173bd90&gt;<br/><br/>    def test_responsive_layout(self, logged_in_user, awareness_page):<br/>        &quot;&quot;&quot;Test that the awareness page layout is responsive&quot;&quot;&quot;<br/>&gt;       awareness_page.navigate_to_awareness()<br/><br/>tests/tests/test_awareness.py:44: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/awareness_page.py:11: in navigate_to_awareness<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;awareness&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;40481f717cc92089468390fe20ded606&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x111765d00&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x000000010a39c2c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x000000010a3938ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x0000000109e18de0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x0000000109e6a797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x0000000109e6a9b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x0000000109eba9b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x0000000109e909ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x0000000109eb7cdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x0000000109e90793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x0000000109e5cb25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x0000000109e5d791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x000000010a358cc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x000000010a35cbb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x000000010a333004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x000000010a35d5db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x000000010a321704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x000000010a3810c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x000000010a381290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x000000010a3934b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;awareness&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_dashboard.py::TestDashboard::test_filter_by_status</td>
+          <td class="col-duration">86.67</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_dashboard.TestDashboard object at 0x111626850&gt;<br/>logged_in_user = True<br/>dashboard_page = &lt;pages.dashboard_page.DashboardPage object at 0x11162e7b0&gt;<br/><br/>    def test_filter_by_status(self, logged_in_user, dashboard_page):<br/>&gt;       dashboard_page.navigate_to_dashboard()<br/><br/>tests/tests/test_dashboard.py:7: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/dashboard_page.py:12: in navigate_to_dashboard<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;dashboard&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;ba0d50a6b1755e0687bb960e5d465705&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x111765ee0&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x000000010c5612c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x000000010c5588ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x000000010bfddde0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x000000010c02f797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x000000010c02f9b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x000000010c07f9b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x000000010c0559ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x000000010c07ccdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x000000010c055793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x000000010c021b25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x000000010c022791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x000000010c51dcc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x000000010c521bb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x000000010c4f8004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x000000010c5225db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x000000010c4e6704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x000000010c5460c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x000000010c546290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x000000010c5584b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;dashboard&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_dashboard.py::TestDashboard::test_filter_by_location</td>
+          <td class="col-duration">86.63</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_dashboard.TestDashboard object at 0x111626ad0&gt;<br/>logged_in_user = True<br/>dashboard_page = &lt;pages.dashboard_page.DashboardPage object at 0x1117f02d0&gt;<br/><br/>    def test_filter_by_location(self, logged_in_user, dashboard_page):<br/>&gt;       dashboard_page.navigate_to_dashboard()<br/><br/>tests/tests/test_dashboard.py:19: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/dashboard_page.py:12: in navigate_to_dashboard<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;dashboard&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;b8c3c0b0d09c60956f8d5450eaf1b6ae&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x111766340&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x000000010fd0b2c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x000000010fd028ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x000000010f787de0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x000000010f7d9797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x000000010f7d99b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x000000010f8299b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x000000010f7ff9ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x000000010f826cdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x000000010f7ff793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x000000010f7cbb25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x000000010f7cc791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x000000010fcc7cc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x000000010fccbbb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x000000010fca2004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x000000010fccc5db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x000000010fc90704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x000000010fcf00c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x000000010fcf0290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x000000010fd024b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;dashboard&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_dashboard.py::TestDashboard::test_filter_count_display</td>
+          <td class="col-duration">86.73</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_dashboard.TestDashboard object at 0x11156afd0&gt;<br/>logged_in_user = True<br/>dashboard_page = &lt;pages.dashboard_page.DashboardPage object at 0x111627ed0&gt;<br/><br/>    def test_filter_count_display(self, logged_in_user, dashboard_page):<br/>&gt;       dashboard_page.navigate_to_dashboard()<br/><br/>tests/tests/test_dashboard.py:29: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/dashboard_page.py:12: in navigate_to_dashboard<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;dashboard&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;d7e0748437349f888940ccf0463b9007&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x111766480&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x000000010a18b2c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x000000010a1828ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x0000000109c07de0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x0000000109c59797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x0000000109c599b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x0000000109ca99b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x0000000109c7f9ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x0000000109ca6cdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x0000000109c7f793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x0000000109c4bb25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x0000000109c4c791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x000000010a147cc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x000000010a14bbb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x000000010a122004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x000000010a14c5db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x000000010a110704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x000000010a1700c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x000000010a170290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x000000010a1824b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;dashboard&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_feedback.py::TestFeedback::test_submit_valid_feedback</td>
+          <td class="col-duration">86.45</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_feedback.TestFeedback object at 0x111626e90&gt;, logged_in_user = True<br/>feedback_page = &lt;pages.feedback_page.FeedbackPage object at 0x11162e7b0&gt;<br/><br/>    def test_submit_valid_feedback(self, logged_in_user, feedback_page):<br/>&gt;       feedback_page.navigate_to_feedback()<br/><br/>tests/tests/test_feedback.py:7: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/feedback_page.py:15: in navigate_to_feedback<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;feedback&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;cf9226e93dae9b9ba1e811e692802b02&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x111764f40&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x00000001032dc2c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x00000001032d38ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x0000000102d58de0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x0000000102daa797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x0000000102daa9b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x0000000102dfa9b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x0000000102dd09ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x0000000102df7cdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x0000000102dd0793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x0000000102d9cb25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x0000000102d9d791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x0000000103298cc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x000000010329cbb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x0000000103273004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x000000010329d5db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x0000000103261704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x00000001032c10c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x00000001032c1290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x00000001032d34b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;feedback&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_feedback.py::TestFeedback::test_required_fields_validation[-Missed Pickup-expected_errors0]</td>
+          <td class="col-duration">86.70</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_feedback.TestFeedback object at 0x111626fd0&gt;, logged_in_user = True<br/>feedback_page = &lt;pages.feedback_page.FeedbackPage object at 0x11173b250&gt;<br/>request_id = &#x27;&#x27;, reason = &#x27;Missed Pickup&#x27;, expected_errors = [&#x27;Request ID&#x27;]<br/><br/>    @pytest.mark.parametrize(&quot;request_id,reason,expected_errors&quot;, [<br/>        (&quot;&quot;, &quot;Missed Pickup&quot;, [&quot;Request ID&quot;]),<br/>        (&quot;REQ001&quot;, &quot;&quot;, [&quot;Reason&quot;]),<br/>        (&quot;&quot;, &quot;&quot;, [&quot;Request ID&quot;, &quot;Reason&quot;]),<br/>    ])<br/>    def test_required_fields_validation(self, logged_in_user, feedback_page, request_id, reason, expected_errors):<br/>&gt;       feedback_page.navigate_to_feedback()<br/><br/>tests/tests/test_feedback.py:21: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/feedback_page.py:15: in navigate_to_feedback<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;feedback&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;235ed1b47be496b7c3cdfba90ce8a346&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x111765800&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x00000001053c22c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x00000001053b98ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x0000000104e3ede0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x0000000104e90797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x0000000104e909b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x0000000104ee09b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x0000000104eb69ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x0000000104eddcdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x0000000104eb6793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x0000000104e82b25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x0000000104e83791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x000000010537ecc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x0000000105382bb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x0000000105359004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x00000001053835db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x0000000105347704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x00000001053a70c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x00000001053a7290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x00000001053b94b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;feedback&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_feedback.py::TestFeedback::test_required_fields_validation[REQ001--expected_errors1]</td>
+          <td class="col-duration">86.85</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_feedback.TestFeedback object at 0x11156b490&gt;, logged_in_user = True<br/>feedback_page = &lt;pages.feedback_page.FeedbackPage object at 0x111739a90&gt;<br/>request_id = &#x27;REQ001&#x27;, reason = &#x27;&#x27;, expected_errors = [&#x27;Reason&#x27;]<br/><br/>    @pytest.mark.parametrize(&quot;request_id,reason,expected_errors&quot;, [<br/>        (&quot;&quot;, &quot;Missed Pickup&quot;, [&quot;Request ID&quot;]),<br/>        (&quot;REQ001&quot;, &quot;&quot;, [&quot;Reason&quot;]),<br/>        (&quot;&quot;, &quot;&quot;, [&quot;Request ID&quot;, &quot;Reason&quot;]),<br/>    ])<br/>    def test_required_fields_validation(self, logged_in_user, feedback_page, request_id, reason, expected_errors):<br/>&gt;       feedback_page.navigate_to_feedback()<br/><br/>tests/tests/test_feedback.py:21: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/feedback_page.py:15: in navigate_to_feedback<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;feedback&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;34069da05f1333b9a869a798f430b170&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x111766f20&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x000000010a5662c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x000000010a55d8ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x0000000109fe2de0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x000000010a034797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x000000010a0349b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x000000010a0849b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x000000010a05a9ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x000000010a081cdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x000000010a05a793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x000000010a026b25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x000000010a027791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x000000010a522cc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x000000010a526bb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x000000010a4fd004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x000000010a5275db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x000000010a4eb704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x000000010a54b0c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x000000010a54b290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x000000010a55d4b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;feedback&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_feedback.py::TestFeedback::test_required_fields_validation[--expected_errors2]</td>
+          <td class="col-duration">86.77</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_feedback.TestFeedback object at 0x11156b5c0&gt;, logged_in_user = True<br/>feedback_page = &lt;pages.feedback_page.FeedbackPage object at 0x11156bbb0&gt;<br/>request_id = &#x27;&#x27;, reason = &#x27;&#x27;, expected_errors = [&#x27;Request ID&#x27;, &#x27;Reason&#x27;]<br/><br/>    @pytest.mark.parametrize(&quot;request_id,reason,expected_errors&quot;, [<br/>        (&quot;&quot;, &quot;Missed Pickup&quot;, [&quot;Request ID&quot;]),<br/>        (&quot;REQ001&quot;, &quot;&quot;, [&quot;Reason&quot;]),<br/>        (&quot;&quot;, &quot;&quot;, [&quot;Request ID&quot;, &quot;Reason&quot;]),<br/>    ])<br/>    def test_required_fields_validation(self, logged_in_user, feedback_page, request_id, reason, expected_errors):<br/>&gt;       feedback_page.navigate_to_feedback()<br/><br/>tests/tests/test_feedback.py:21: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/feedback_page.py:15: in navigate_to_feedback<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;feedback&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;912a9b68be3d3e47394b42bbfccb9317&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x111767560&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x000000010b1f52c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x000000010b1ec8ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x000000010ac71de0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x000000010acc3797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x000000010acc39b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x000000010ad139b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x000000010ace99ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x000000010ad10cdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x000000010ace9793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x000000010acb5b25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x000000010acb6791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x000000010b1b1cc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x000000010b1b5bb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x000000010b18c004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x000000010b1b65db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x000000010b17a704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x000000010b1da0c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x000000010b1da290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x000000010b1ec4b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;feedback&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_feedback.py::TestFeedback::test_invalid_request_id</td>
+          <td class="col-duration">86.57</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_feedback.TestFeedback object at 0x1115b3bf0&gt;, logged_in_user = True<br/>feedback_page = &lt;pages.feedback_page.FeedbackPage object at 0x11172dcd0&gt;<br/><br/>    def test_invalid_request_id(self, logged_in_user, feedback_page):<br/>&gt;       feedback_page.navigate_to_feedback()<br/><br/>tests/tests/test_feedback.py:33: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>tests/pages/feedback_page.py:15: in navigate_to_feedback<br/>    self.click((By.CSS_SELECTOR, &quot;a[data-page=&#x27;feedback&#x27;]&quot;))<br/>tests/pages/base_page.py:32: in click<br/>    element = self.wait.until(<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;36c584ecacebd12e2ca896793d7f49e6&quot;)&gt;<br/>method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x1117668e0&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = &quot;&quot;) -&gt; T:<br/>        &quot;&quot;&quot;Wait until the method returns a value that is not False.<br/>    <br/>        Calls the method provided with the driver as an argument until the<br/>        return value does not evaluate to ``False``.<br/>    <br/>        Parameters:<br/>        -----------<br/>        method: callable(WebDriver)<br/>            - A callable object that takes a WebDriver instance as an argument.<br/>    <br/>        message: str<br/>            - Optional message for :exc:`TimeoutException`<br/>    <br/>        Return:<br/>        -------<br/>        object: T<br/>            - The result of the last call to `method`<br/>    <br/>        Raises:<br/>        -------<br/>        TimeoutException<br/>            - If &#x27;method&#x27; does not return a truthy value within the WebDriverWait<br/>            object&#x27;s timeout<br/>    <br/>        Example:<br/>        --------<br/>        &gt;&gt;&gt; from selenium.webdriver.common.by import By<br/>        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait<br/>        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC<br/>    <br/>        # Wait until an element is visible on the page<br/>        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)<br/>        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, &quot;exampleId&quot;)))<br/>        &gt;&gt;&gt; print(element.text)<br/>        &quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.monotonic() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &quot;screen&quot;, None)<br/>                stacktrace = getattr(exc, &quot;stacktrace&quot;, None)<br/>            if time.monotonic() &gt; end_time:<br/>                break<br/>            time.sleep(self._poll)<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message: </span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       0   chromedriver                        0x000000010a9e82c8 chromedriver + 6197960</span><br/><span class="error">E       1   chromedriver                        0x000000010a9df8ea chromedriver + 6162666</span><br/><span class="error">E       2   chromedriver                        0x000000010a464de0 chromedriver + 417248</span><br/><span class="error">E       3   chromedriver                        0x000000010a4b6797 chromedriver + 751511</span><br/><span class="error">E       4   chromedriver                        0x000000010a4b69b1 chromedriver + 752049</span><br/><span class="error">E       5   chromedriver                        0x000000010a5069b4 chromedriver + 1079732</span><br/><span class="error">E       6   chromedriver                        0x000000010a4dc9ed chromedriver + 907757</span><br/><span class="error">E       7   chromedriver                        0x000000010a503cdb chromedriver + 1068251</span><br/><span class="error">E       8   chromedriver                        0x000000010a4dc793 chromedriver + 907155</span><br/><span class="error">E       9   chromedriver                        0x000000010a4a8b25 chromedriver + 695077</span><br/><span class="error">E       10  chromedriver                        0x000000010a4a9791 chromedriver + 698257</span><br/><span class="error">E       11  chromedriver                        0x000000010a9a4cc0 chromedriver + 5921984</span><br/><span class="error">E       12  chromedriver                        0x000000010a9a8bb1 chromedriver + 5938097</span><br/><span class="error">E       13  chromedriver                        0x000000010a97f004 chromedriver + 5767172</span><br/><span class="error">E       14  chromedriver                        0x000000010a9a95db chromedriver + 5940699</span><br/><span class="error">E       15  chromedriver                        0x000000010a96d704 chromedriver + 5695236</span><br/><span class="error">E       16  chromedriver                        0x000000010a9cd0c8 chromedriver + 6086856</span><br/><span class="error">E       17  chromedriver                        0x000000010a9cd290 chromedriver + 6087312</span><br/><span class="error">E       18  chromedriver                        0x000000010a9df4b1 chromedriver + 6161585</span><br/><span class="error">E       19  libsystem_pthread.dylib             0x00007ff8168b21d3 _pthread_start + 125</span><br/><span class="error">E       20  libsystem_pthread.dylib             0x00007ff8168adbd3 thread_start + 15</span><br/><br/>venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException<br/> ------------------------------Captured stdout call------------------------------ <br/>
+Element not clickable: (&#x27;css selector&#x27;, &quot;a[data-page=&#x27;feedback&#x27;]&quot;)
+Current URL: http://localhost:3000/profile
+<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_home.py::TestHomePage::test_submit_valid_request</td>
+          <td class="col-duration">59.73</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_home.TestHomePage object at 0x111627250&gt;, logged_in_user = True<br/>home_page = &lt;pages.home_page.HomePage object at 0x11162e660&gt;<br/><br/>    def test_submit_valid_request(self, logged_in_user, home_page):<br/>&gt;       home_page.submit_pickup_request(<br/>            name=&quot;Test User&quot;,<br/>            location=&quot;Nairobi&quot;,<br/>            waste_type=&quot;General&quot;,<br/>            date=&quot;2023-12-31&quot;<br/>        )<br/><br/>tests/tests/test_home.py:7: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;pages.home_page.HomePage object at 0x11162e660&gt;, name = &#x27;Test User&#x27;<br/>location = &#x27;Nairobi&#x27;, waste_type = &#x27;General&#x27;, date = &#x27;2023-12-31&#x27;<br/><br/>    def submit_pickup_request(self, name, location, waste_type, date=None):<br/>&gt;       self.enter_text(self.FULL_NAME_INPUT, name)<br/><span class="error">E       AttributeError: &#x27;HomePage&#x27; object has no attribute &#x27;enter_text&#x27;</span><br/><br/>tests/pages/home_page.py:23: AttributeError<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_home.py::TestHomePage::test_required_fields_validation[-Nairobi-General-expected_errors0]</td>
+          <td class="col-duration">59.71</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_home.TestHomePage object at 0x111626490&gt;, logged_in_user = True<br/>home_page = &lt;pages.home_page.HomePage object at 0x11173a850&gt;, name = &#x27;&#x27;<br/>location = &#x27;Nairobi&#x27;, waste_type = &#x27;General&#x27;, expected_errors = [&#x27;Name&#x27;]<br/><br/>    @pytest.mark.parametrize(&quot;name,location,waste_type,expected_errors&quot;, [<br/>        (&quot;&quot;, &quot;Nairobi&quot;, &quot;General&quot;, [&quot;Name&quot;]),<br/>        (&quot;Test User&quot;, &quot;&quot;, &quot;General&quot;, [&quot;Location&quot;]),<br/>        (&quot;Test User&quot;, &quot;Nairobi&quot;, &quot;&quot;, [&quot;Waste&quot;]),<br/>        (&quot;&quot;, &quot;&quot;, &quot;&quot;, [&quot;Name&quot;, &quot;Location&quot;, &quot;Waste&quot;]),<br/>    ])<br/>    def test_required_fields_validation(self, logged_in_user, home_page, name, location, waste_type, expected_errors):<br/>&gt;       home_page.submit_pickup_request(name, location, waste_type)<br/><br/>tests/tests/test_home.py:22: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;pages.home_page.HomePage object at 0x11173a850&gt;, name = &#x27;&#x27;<br/>location = &#x27;Nairobi&#x27;, waste_type = &#x27;General&#x27;, date = None<br/><br/>    def submit_pickup_request(self, name, location, waste_type, date=None):<br/>&gt;       self.enter_text(self.FULL_NAME_INPUT, name)<br/><span class="error">E       AttributeError: &#x27;HomePage&#x27; object has no attribute &#x27;enter_text&#x27;</span><br/><br/>tests/pages/home_page.py:23: AttributeError<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_home.py::TestHomePage::test_required_fields_validation[Test User--General-expected_errors1]</td>
+          <td class="col-duration">59.98</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_home.TestHomePage object at 0x11156ab10&gt;, logged_in_user = True<br/>home_page = &lt;pages.home_page.HomePage object at 0x11173b890&gt;, name = &#x27;Test User&#x27;<br/>location = &#x27;&#x27;, waste_type = &#x27;General&#x27;, expected_errors = [&#x27;Location&#x27;]<br/><br/>    @pytest.mark.parametrize(&quot;name,location,waste_type,expected_errors&quot;, [<br/>        (&quot;&quot;, &quot;Nairobi&quot;, &quot;General&quot;, [&quot;Name&quot;]),<br/>        (&quot;Test User&quot;, &quot;&quot;, &quot;General&quot;, [&quot;Location&quot;]),<br/>        (&quot;Test User&quot;, &quot;Nairobi&quot;, &quot;&quot;, [&quot;Waste&quot;]),<br/>        (&quot;&quot;, &quot;&quot;, &quot;&quot;, [&quot;Name&quot;, &quot;Location&quot;, &quot;Waste&quot;]),<br/>    ])<br/>    def test_required_fields_validation(self, logged_in_user, home_page, name, location, waste_type, expected_errors):<br/>&gt;       home_page.submit_pickup_request(name, location, waste_type)<br/><br/>tests/tests/test_home.py:22: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;pages.home_page.HomePage object at 0x11173b890&gt;, name = &#x27;Test User&#x27;<br/>location = &#x27;&#x27;, waste_type = &#x27;General&#x27;, date = None<br/><br/>    def submit_pickup_request(self, name, location, waste_type, date=None):<br/>&gt;       self.enter_text(self.FULL_NAME_INPUT, name)<br/><span class="error">E       AttributeError: &#x27;HomePage&#x27; object has no attribute &#x27;enter_text&#x27;</span><br/><br/>tests/pages/home_page.py:23: AttributeError<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_home.py::TestHomePage::test_required_fields_validation[Test User-Nairobi--expected_errors2]</td>
+          <td class="col-duration">60.26</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_home.TestHomePage object at 0x11156b6f0&gt;, logged_in_user = True<br/>home_page = &lt;pages.home_page.HomePage object at 0x11173b4d0&gt;, name = &#x27;Test User&#x27;<br/>location = &#x27;Nairobi&#x27;, waste_type = &#x27;&#x27;, expected_errors = [&#x27;Waste&#x27;]<br/><br/>    @pytest.mark.parametrize(&quot;name,location,waste_type,expected_errors&quot;, [<br/>        (&quot;&quot;, &quot;Nairobi&quot;, &quot;General&quot;, [&quot;Name&quot;]),<br/>        (&quot;Test User&quot;, &quot;&quot;, &quot;General&quot;, [&quot;Location&quot;]),<br/>        (&quot;Test User&quot;, &quot;Nairobi&quot;, &quot;&quot;, [&quot;Waste&quot;]),<br/>        (&quot;&quot;, &quot;&quot;, &quot;&quot;, [&quot;Name&quot;, &quot;Location&quot;, &quot;Waste&quot;]),<br/>    ])<br/>    def test_required_fields_validation(self, logged_in_user, home_page, name, location, waste_type, expected_errors):<br/>&gt;       home_page.submit_pickup_request(name, location, waste_type)<br/><br/>tests/tests/test_home.py:22: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;pages.home_page.HomePage object at 0x11173b4d0&gt;, name = &#x27;Test User&#x27;<br/>location = &#x27;Nairobi&#x27;, waste_type = &#x27;&#x27;, date = None<br/><br/>    def submit_pickup_request(self, name, location, waste_type, date=None):<br/>&gt;       self.enter_text(self.FULL_NAME_INPUT, name)<br/><span class="error">E       AttributeError: &#x27;HomePage&#x27; object has no attribute &#x27;enter_text&#x27;</span><br/><br/>tests/pages/home_page.py:23: AttributeError<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_home.py::TestHomePage::test_required_fields_validation[---expected_errors3]</td>
+          <td class="col-duration">59.77</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_home.TestHomePage object at 0x1116d84d0&gt;, logged_in_user = True<br/>home_page = &lt;pages.home_page.HomePage object at 0x11173a0d0&gt;, name = &#x27;&#x27;<br/>location = &#x27;&#x27;, waste_type = &#x27;&#x27;, expected_errors = [&#x27;Name&#x27;, &#x27;Location&#x27;, &#x27;Waste&#x27;]<br/><br/>    @pytest.mark.parametrize(&quot;name,location,waste_type,expected_errors&quot;, [<br/>        (&quot;&quot;, &quot;Nairobi&quot;, &quot;General&quot;, [&quot;Name&quot;]),<br/>        (&quot;Test User&quot;, &quot;&quot;, &quot;General&quot;, [&quot;Location&quot;]),<br/>        (&quot;Test User&quot;, &quot;Nairobi&quot;, &quot;&quot;, [&quot;Waste&quot;]),<br/>        (&quot;&quot;, &quot;&quot;, &quot;&quot;, [&quot;Name&quot;, &quot;Location&quot;, &quot;Waste&quot;]),<br/>    ])<br/>    def test_required_fields_validation(self, logged_in_user, home_page, name, location, waste_type, expected_errors):<br/>&gt;       home_page.submit_pickup_request(name, location, waste_type)<br/><br/>tests/tests/test_home.py:22: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;pages.home_page.HomePage object at 0x11173a0d0&gt;, name = &#x27;&#x27;<br/>location = &#x27;&#x27;, waste_type = &#x27;&#x27;, date = None<br/><br/>    def submit_pickup_request(self, name, location, waste_type, date=None):<br/>&gt;       self.enter_text(self.FULL_NAME_INPUT, name)<br/><span class="error">E       AttributeError: &#x27;HomePage&#x27; object has no attribute &#x27;enter_text&#x27;</span><br/><br/>tests/pages/home_page.py:23: AttributeError<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_home.py::TestHomePage::test_date_field_validation</td>
+          <td class="col-duration">59.53</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_home.TestHomePage object at 0x1115a6be0&gt;, logged_in_user = True<br/>home_page = &lt;pages.home_page.HomePage object at 0x111739e50&gt;<br/><br/>    def test_date_field_validation(self, logged_in_user, home_page):<br/>        # Intentional bug - date field doesn&#x27;t show validation error<br/>&gt;       home_page.submit_pickup_request(<br/>            name=&quot;Test User&quot;,<br/>            location=&quot;Nairobi&quot;,<br/>            waste_type=&quot;General&quot;,<br/>            date=&quot;invalid-date&quot;<br/>        )<br/><br/>tests/tests/test_home.py:36: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;pages.home_page.HomePage object at 0x111739e50&gt;, name = &#x27;Test User&#x27;<br/>location = &#x27;Nairobi&#x27;, waste_type = &#x27;General&#x27;, date = &#x27;invalid-date&#x27;<br/><br/>    def submit_pickup_request(self, name, location, waste_type, date=None):<br/>&gt;       self.enter_text(self.FULL_NAME_INPUT, name)<br/><span class="error">E       AttributeError: &#x27;HomePage&#x27; object has no attribute &#x27;enter_text&#x27;</span><br/><br/>tests/pages/home_page.py:23: AttributeError<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_login.py::TestLogin::test_login_with_credentials[invalid@email.com-wrongpass-False-True]</td>
+          <td class="col-duration">74.94</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_login.TestLogin object at 0x11156b950&gt;<br/>login_page = &lt;pages.login_page.LoginPage object at 0x1117ea750&gt;<br/>email = &#x27;invalid@email.com&#x27;, password = &#x27;wrongpass&#x27;, expected_success = False<br/>expect_error = True<br/><br/>    @pytest.mark.parametrize(&quot;email,password,expected_success,expect_error&quot;, [<br/>        # Valid credentials<br/>        (&quot;user@cleancity.com&quot;, &quot;password123&quot;, True, False),<br/>        (&quot;admin@cleancity.com&quot;, &quot;admin123&quot;, True, False),<br/>    <br/>        # Invalid credentials (now expecting redirect with current behavior)<br/>        (&quot;invalid@email.com&quot;, &quot;wrongpass&quot;, False, True),<br/>    <br/>        # Empty fields (now expecting no error with current behavior)<br/>        (&quot;&quot;, &quot;password123&quot;, False, False),<br/>        (&quot;user@cleancity.com&quot;, &quot;&quot;, False, False),<br/>    ])<br/>    def test_login_with_credentials(self, login_page, email, password, expected_success, expect_error):<br/>        login_page.login(email, password)<br/>    <br/>        if expected_success:<br/>            assert login_page.is_login_successful(), \<br/>                f&quot;Expected successful login but failed. URL: {login_page.driver.current_url}&quot;<br/>        else:<br/>            if expect_error:<br/>                error_msg = login_page.get_error_message()<br/>&gt;               assert error_msg, f&quot;Expected error message but got none. URL: {login_page.driver.current_url}&quot;<br/><span class="error">E               AssertionError: Expected error message but got none. URL: http://localhost:3000/profile</span><br/><span class="error">E               assert &#x27;&#x27;</span><br/><br/>tests/tests/test_login.py:28: AssertionError<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/tests/test_react_bootstrap.py::test_react_loaded</td>
+          <td class="col-duration">2.81</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">browser = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session=&quot;98d395fc402b8502e1c90fccbc4591ae&quot;)&gt;<br/><br/>    def test_react_loaded(browser):<br/>        browser.get(&quot;http://localhost:3000&quot;)<br/>&gt;       assert browser.execute_script(&quot;return typeof React !== &#x27;undefined&#x27;&quot;), &quot;React is not defined&quot;<br/><span class="error">E       AssertionError: React is not defined</span><br/><span class="error">E       assert False</span><br/><span class="error">E        +  where False = &lt;bound method WebDriver.execute_script of &lt;selenium.webdriver.chrome.webdriver.WebDriver (session=&quot;98d395fc402b8502e1c90fccbc4591ae&quot;)&gt;&gt;(&quot;return typeof React !== &#x27;undefined&#x27;&quot;)</span><br/><span class="error">E        +    where &lt;bound method WebDriver.execute_script of &lt;selenium.webdriver.chrome.webdriver.WebDriver (session=&quot;98d395fc402b8502e1c90fccbc4591ae&quot;)&gt;&gt; = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session=&quot;98d395fc402b8502e1c90fccbc4591ae&quot;)&gt;.execute_script</span><br/><br/>tests/tests/test_react_bootstrap.py:3: AssertionError<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/tests/test_login.py::TestLogin::test_login_with_credentials[user@cleancity.com-password123-True-False]</td>
+          <td class="col-duration">59.83</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/tests/test_login.py::TestLogin::test_login_with_credentials[admin@cleancity.com-admin123-True-False]</td>
+          <td class="col-duration">59.79</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/tests/test_login.py::TestLogin::test_login_with_credentials[-password123-False-False]</td>
+          <td class="col-duration">74.86</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/tests/test_login.py::TestLogin::test_login_with_credentials[user@cleancity.com--False-False]</td>
+          <td class="col-duration">74.75</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/tests/test_login.py::TestLogin::test_navigation_to_register</td>
+          <td class="col-duration">15.21</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody></table></body></html>
