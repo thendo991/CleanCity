@@ -58,7 +58,7 @@
 | **Priority**                     | High                                                                   |
 | **Affected Test**                | `test_login_with_credentials[invalid@email.com-wrongpass-False-True]` |
 
-See: [`KNOWN_ISSUES.md`](./KNOWN_ISSUES.md)
+See: [`KNOWN_ISSUES.md`](.tests/KNOWN_ISSUES.md)
 
 ---
 
@@ -98,7 +98,7 @@ See: [`KNOWN_ISSUES.md`](./KNOWN_ISSUES.md)
 ## 8. ✅ Sign-Off
 
 **Tester:** Bryan Mwalwala  
-**Email:** [Your Email Here]  
+**Email:** [mwalwalabryan@gmail.com]  
 **Date:** July 8, 2025
 
 ---
