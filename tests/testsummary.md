@@ -13,7 +13,7 @@
 | OS                  | macOS 13.7.6 (Darwin)                  |
 | Python              | 3.13.3                                 |
 | Pytest              | 7.1.2                                  |
-| Browser             | Safari (System Default)                |
+| Browser             | Google Chrome                          |
 | Application URL     | `http://localhost:3000`                |
 | Test Code           | `tests/tests/test_login.py`            |
 | Report Generated    | `reports/report.html`                  |
