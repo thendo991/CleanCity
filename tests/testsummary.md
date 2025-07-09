@@ -58,7 +58,7 @@
 | **Priority**                     | High                                                                   |
 | **Affected Test**                | `test_login_with_credentials[invalid@email.com-wrongpass-False-True]` |
 
-See: [`KNOWN_ISSUES.md`](.tests/KNOWN_ISSUES.md)
+See: [`KNOWN_ISSUES.md`](./tests/KNOWN_ISSUES.md)
 
 ---
 
