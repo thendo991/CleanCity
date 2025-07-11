@@ -5,6 +5,7 @@ You are able to register/ sign up a new account when you’re logged in on anoth
 Under awareness/ feedback the request id and feedback input fields accept any input even alphanumeric inputs. which is not a coherent issue.
 No delete button in the community feed updates.
 Report button on the community page (spam and harmful content can be posted freely).
+The dashboard is identical for users and admins.
 
 Enhancements:
 The avatars on the profiles are pre-selected and not something defined by the user during sign up
@@ -35,6 +36,12 @@ Use <output> instead of the "status" role to ensure accessibility across all dev
 Use <main> instead of the "main" role to ensure accessibility across all devices.
 "data" is missing in props validation.
 Do not use Array index in keys.
-
+A form label must be associated with a control (Ln 191)
+Add an alt for this image(Ln 351)
+Add an alt for this image(Ln 369)
+Add an alt attribute to this image (Ln 388)
+Refactor function to reduce it's cognitive complexity from 19 to the 15 allowed (Ln 376) script.js
+Prefer using an optional chain expression instead for better readability.(Ln 900,Col 30) script.js 
+Prefer using an optional chain expression instead for better readability.(Ln 900,Col 73) script.js 
 Selenium:
 Invalid login redirects to /profile instead of displaying an error.
