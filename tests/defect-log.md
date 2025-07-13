@@ -89,12 +89,25 @@ https://github.com/thendo991/CleanCity/issues/28#issue-3226655320
 Do not use Array index in keys.
 https://github.com/thendo991/CleanCity/issues/29#issue-3226659436
 
-A form label must be associated with a control (Ln 191)
-Add an alt for this image(Ln 351)
-Add an alt for this image(Ln 369)
+A form label must be associated with a control.
+https://github.com/thendo991/CleanCity/issues/30#issue-3226722412
+
+Add an alt for this image.
+https://github.com/thendo991/CleanCity/issues/31#issue-3226725261
+
+Add an alt for this image.
+https://github.com/thendo991/CleanCity/issues/32#issue-3226726560
+
 Add an alt attribute to this image (Ln 388)
-Refactor function to reduce it's cognitive complexity from 19 to the 15 allowed (Ln 376) script.js
-Prefer using an optional chain expression instead for better readability.(Ln 900,Col 30) script.js 
-Prefer using an optional chain expression instead for better readability.(Ln 900,Col 73) script.js 
+https://github.com/thendo991/CleanCity/issues/33#issue-3226727246
+
+Refactor function to reduce it's cognitive complexity.
+https://github.com/thendo991/CleanCity/issues/34#issue-3226731255
+
+Prefer using an optional chain expression instead for better readability.
+https://github.com/thendo991/CleanCity/issues/35#issue-3226732116
+
+Prefer using an optional chain expression instead for better readability.
+
 Selenium:
 Invalid login redirects to /profile instead of displaying an error.
