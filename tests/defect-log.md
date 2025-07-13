@@ -1,21 +1,44 @@
 Functionality issues:
-In the blog section when it is refreshed comments disappear.
 In the eco awareness/ eco quiz, the quiz doesn’t end so you can keep redoing it and yet it only has 3 questions.
+https://github.com/thendo991/CleanCity/issues/1#issue-3225347209
+
+In the blog section when it is refreshed comments disappear.
+https://github.com/thendo991/CleanCity/issues/2#issue-3226225078
+
 You are able to register/ sign up a new account when you’re logged in on another account.
+https://github.com/thendo991/CleanCity/issues/3#issue-3226233473
+
 Under awareness/ feedback the request id and feedback input fields accept any input even alphanumeric inputs. which is not a coherent issue.
+https://github.com/thendo991/CleanCity/issues/4#issue-3226242062
+
 No delete button in the community feed updates.
+https://github.com/thendo991/CleanCity/issues/5#issue-3226250451
+
 Report button on the community page (spam and harmful content can be posted freely).
+https://github.com/thendo991/CleanCity/issues/6#issue-3226253365
+
 The dashboard is identical for users and admins.
+https://github.com/thendo991/CleanCity/issues/7#issue-3226257131
+
+System lets you put anything in the name section when scheduling a request and does not give error messages.
+https://github.com/thendo991/CleanCity/issues/8#issue-3226261490
+
+Pickup requests you make are not shown in the my requests section of your profile.
+https://github.com/thendo991/CleanCity/issues/13#issue-3226541591
 
 Enhancements:
-The avatars on the profiles are pre-selected and not something defined by the user during sign up
+The avatars on the profiles are pre-selected and not something defined by the user during sign up.
+https://github.com/thendo991/CleanCity/issues/9#issue-3226504875
 
-Feature Issues:
-Under profile you have my blog posts but under blogs there’s no button to add a new blog post.
+User selections during pickup scheduling should be saved by the system.
+https://github.com/thendo991/CleanCity/issues/10#issue-3226507945
+
+There’s no backend integration when it comes to pickup requests.
+https://github.com/thendo991/CleanCity/issues/11#issue-3226523837 
+
 Under blog/ enter key doesn’t go to the next line or submit a post.
-There’s no backend integration when it comes to pickup requests. 
-Profile/requests does not load your requests.
-Under profile you have my blog posts but under blogs there’s no button to add a new blog post.
+https://github.com/thendo991/CleanCity/issues/12#issue-3226529476
+
 
 SonarQube:
 Hard-coded password (Security Risk).
