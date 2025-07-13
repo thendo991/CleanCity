@@ -41,24 +41,54 @@ https://github.com/thendo991/CleanCity/issues/12#issue-3226529476
 
 
 SonarQube:
-Hard-coded password (Security Risk).
 Unexepected duplicated sector (.navbar a).
-"match" is missing props validation.
-"match.params" is missing props validation.
+https://github.com/thendo991/CleanCity/issues/14#issue-3226573542
+
 "tabIndex" should only be declared on interactive elements.
-The element article has an implicit role of article, defining it is redundant.
+https://github.com/thendo991/CleanCity/issues/15#issue-3226597750
+
+"match" is missing props validation.
+https://github.com/thendo991/CleanCity/issues/16#issue-3226604554
+
+"match.params" is missing props validation.
+https://github.com/thendo991/CleanCity/issues/17#issue-3226609484
+
 "onSave" is missing props validation.
+https://github.com/thendo991/CleanCity/issues/18#issue-3226614884
+
 "initial" is missing in props validation.
+https://github.com/thendo991/CleanCity/issues/19#issue-3226618817
+
 "onRegister" is missing in props validation.
+https://github.com/thendo991/CleanCity/issues/20#issue-3226622401
+
 Remove useless assignment to variable "showForm".
+https://github.com/thendo991/CleanCity/issues/21#issue-3226629122
+
 Remove useless assignment to variable "handleNew".
+https://github.com/thendo991/CleanCity/issues/22#issue-3226631818
+
 Remove useless assignment to variable "handleDeleteComment".
+https://github.com/thendo991/CleanCity/issues/23#issue-3226637734
+
 Remove useless assignment to variable "handleMarkInappropriate".
+https://github.com/thendo991/CleanCity/issues/24#issue-3226640229
+
 Use <output> instead of the "status" role to ensure accessibility across all devices.
+https://github.com/thendo991/CleanCity/issues/25#issue-3226646765
+
 "onLogin" is missing in props validation.
+https://github.com/thendo991/CleanCity/issues/26#issue-3226649199
+
 Use <main> instead of the "main" role to ensure accessibility across all devices.
+https://github.com/thendo991/CleanCity/issues/27#issue-3226652250
+
 "data" is missing in props validation.
+https://github.com/thendo991/CleanCity/issues/28#issue-3226655320
+
 Do not use Array index in keys.
+https://github.com/thendo991/CleanCity/issues/29#issue-3226659436
+
 A form label must be associated with a control (Ln 191)
 Add an alt for this image(Ln 351)
 Add an alt for this image(Ln 369)
