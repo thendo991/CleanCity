@@ -108,6 +108,9 @@ Prefer using an optional chain expression instead for better readability.
 https://github.com/thendo991/CleanCity/issues/35#issue-3226732116
 
 Prefer using an optional chain expression instead for better readability.
+https://github.com/thendo991/CleanCity/issues/36#issue-3226732617
 
+Commenting on a blog post while logged out is accepted by the system.
+https://github.com/thendo991/CleanCity/issues/37#issue-3227749067
 Selenium:
 Invalid login redirects to /profile instead of displaying an error.
