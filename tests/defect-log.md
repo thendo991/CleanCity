@@ -39,6 +39,66 @@ https://github.com/thendo991/CleanCity/issues/11#issue-3226523837
 Under blog/ enter key doesn’t go to the next line or submit a post.
 https://github.com/thendo991/CleanCity/issues/12#issue-3226529476
 
+There is no place where the users environmental metrics are calculated.
+https://github.com/thendo991/CleanCity/issues/38#issue-3229894356
+
+Pickup requests are not visible to the admins.
+https://github.com/thendo991/CleanCity/issues/39#issue-3229925406
+
+System does not keep record of pickup requests made despite keeping record of other things like comments made.
+https://github.com/thendo991/CleanCity/issues/40#issue-3229951576
+
+The buttons on the homepage to redirect you to the schedule pickup, read blog, and sign up pages don't always work and sometimes redirect you to an error page.
+https://github.com/thendo991/CleanCity/issues/41#issue-3229969253
+
+System does not display community leaderboards for environmental impact.
+https://github.com/thendo991/CleanCity/issues/42#issue-3229977618
+
+Waste management data is not provided to us so it can't be exported.
+https://github.com/thendo991/CleanCity/issues/43#issue-3229992090
+
+The system does not give charts of waste management data.
+https://github.com/thendo991/CleanCity/issues/44#issue-3229999917
+
+The system does not award achievement badges.
+https://github.com/thendo991/CleanCity/issues/45#issue-3230013485
+
+Comments made by the users are not added to the "My comments part of their profile".
+https://github.com/thendo991/CleanCity/issues/46#issue-3230042510
+
+Posts made in the community feed still read as "You" even if you made them on another account.
+https://github.com/thendo991/CleanCity/issues/47#issue-3230058014
+
+No pickup requests are visible to admins on the website.
+https://github.com/thendo991/CleanCity/issues/48#issue-3230071363
+
+Admins can't moderate posts or delete inappropriate comments.
+https://github.com/thendo991/CleanCity/issues/49#issue-3230084686
+
+Admins can't create announcements.
+https://github.com/thendo991/CleanCity/issues/50#issue-3230094844
+
+Admins can't manage users.
+https://github.com/thendo991/CleanCity/issues/50#issue-3230094844
+
+No contacts for support or FAQs are provided on the site.
+https://github.com/thendo991/CleanCity/issues/52#issue-3230107683
+
+The system does not log any user activity except blog posts.
+https://github.com/thendo991/CleanCity/issues/53#issue-3230121478
+
+Invalid passwords and passwords that don't meet requirement are accepted by the system.
+https://github.com/thendo991/CleanCity/issues/54#issue-3230136389
+
+Pickup date accepts five digits for the year.
+https://github.com/thendo991/CleanCity/issues/55#issue-3230145499
+
+Invalid email formats are accepted by the system.
+https://github.com/thendo991/CleanCity/issues/56#issue-3230152791
+
+You should be able to make a password visible while typing it.
+https://github.com/thendo991/CleanCity/issues/57#issue-3230158773
+
 
 SonarQube:
 Unexepected duplicated sector (.navbar a).
@@ -112,5 +172,6 @@ https://github.com/thendo991/CleanCity/issues/36#issue-3226732617
 
 Commenting on a blog post while logged out is accepted by the system.
 https://github.com/thendo991/CleanCity/issues/37#issue-3227749067
+
 Selenium:
 Invalid login redirects to /profile instead of displaying an error.
