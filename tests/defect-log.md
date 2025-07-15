@@ -99,6 +99,46 @@ https://github.com/thendo991/CleanCity/issues/56#issue-3230152791
 You should be able to make a password visible while typing it.
 https://github.com/thendo991/CleanCity/issues/57#issue-3230158773
 
+The system allows duplicate sign ups with no errors.
+https://github.com/thendo991/CleanCity/issues/70#issue-3233767993
+
+Test timeout exceeded.
+https://github.com/thendo991/CleanCity/issues/69#issue-3233748638
+
+App continues functioning offline as if online.
+https://github.com/thendo991/CleanCity/issues/68#issue-3233736614
+
+Static posts persist across views; user-generated ones do not reliably persist on the macOS.
+https://github.com/thendo991/CleanCity/issues/67#issue-3233728643
+
+Community posts are text-only no support for images is provided.
+https://github.com/thendo991/CleanCity/issues/66#issue-3233706724
+
+No option to create blog posts for users or admins.
+https://github.com/thendo991/CleanCity/issues/64#issue-3233664555
+
+No visible record of user actions across the app.
+https://github.com/thendo991/CleanCity/issues/60#issue-3233572351
+
+Profile picture changes reflect temporarily but reset on logout/login.
+https://github.com/thendo991/CleanCity/issues/61#issue-3233588462
+
+No option to upload an image from device or select from UI.
+https://github.com/thendo991/CleanCity/issues/65#issue-3233679564
+
+No time slot options are displayed for pickups.
+https://github.com/thendo991/CleanCity/issues/62#issue-3233599254
+
+Submitting multiple requests for the same date, location and waste type is allowed with no feedback.
+https://github.com/thendo991/CleanCity/issues/63#issue-3233635239
+
+No option or button to cancel submitted requests.
+https://github.com/thendo991/CleanCity/issues/59#issue-3233538305
+
+No UI, modal, toast, or in-app notification is triggered when request status is updated.
+https://github.com/thendo991/CleanCity/issues/58#issue-3233493154
+
+
 
 SonarQube:
 Unexepected duplicated sector (.navbar a).
